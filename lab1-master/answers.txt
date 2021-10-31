@@ -1,0 +1,275 @@
+/******************************************************************************
+** DIT181 Datastrukturer och algoritmer, LP3 2021
+** Lab 1: Sorting, Complexity
+*******************************************************************************/
+
+Group members:
+- [Lucas Nordgren]
+- [Jina Dawood]
+- [Maryam Esmaeili Darestani]
+
+/******************************************************************************
+** Task 1: Figuring out the complexity
+**
+** 1. What is the complexity of running each of the following algorithms
+**    on each of the following kinds of inputs?
+**    You only have to decide between quadratic or faster than quadratic.
+******************************************************************************/
+
+Insertion.java on:
+
+- random inputs:      [Quadratic]
+- 95% sorted inputs:  [Quadratic]
+- sorted inputs:      [Faster than quadratic]
+
+Quick.java on:
+
+- random inputs:      [Faster than quadratic]
+- 95% sorted inputs:  [Faster than quadratic]
+- sorted inputs:      [Quadratic]
+
+Merge.java on:
+
+- random inputs:      [Faster than quadratic]
+- 95% sorted inputs:  [Faster than quadratic]
+- sorted inputs:      [Faster than quadratic]
+
+/******************************************************************************
+** 2. How did you check if an algorithm had quadratic complexity or not?
+******************************************************************************/
+
+1. We started by changing the sample sizes so that the size is doubled for every step.
+
+2. Here we take two samples
+Quick sort - random inputs:
+Small size data:
+  No    size        time
+  1      20         0,000195
+  2      40         0,000426
+
+3. Then we check if the runtime gets multiplied by four, when the size of the data doubles.
+s2/s1 = 40/20 = 2 (Which means a doubling of the sample size)
+t2/t1 = 0,000426/0,000195 = 2,1
+
+4.
+In quadratic, if we double the size of data, the runtime must be multiplied by 4. But in this case the
+runtime gets almost twice. so the relationship between the size and runtime is not quadratic.
+
+5.
+For Quicksort, we can see that it struggles with sorted arrays. As the sample size get larger it starts
+to struggle(become more quadratic) compared to if the array is Random or 95% sorted.
+
+In Insertion sort, we noticed the relationship between the runtime and the array size is Quadratic in
+not sorted arrays. But in sorted arrays the relationship is linear. //Also in small size arrays, the runtime is faster
+than quadratic(size 10 & 20).//
+
+In Merge sort, there is no quadratic relation between the array size and the runtime.
+
+
+/******************************************************************************
+** Task 2: Improving quicksort
+**
+** 3. Do the following changes affect the complexity of quicksort
+**    on any kind of input data? If so, what is it that changes?
+******************************************************************************/
+
+No improvements:
+Size |        Random |    95% sorted |        Sorted
+10000 |      0,776545 |      1,066700 |     47,159200
+100000 |     10,155250 |     17,806700 |   4604,525500
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 10 / 0,77 = 10 < 100  ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 17,8 / 1,06 = 17 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 4604 / 47 = 98 < 100  -> almost quadratic.
+
+------------------------------------------------------------------------------------------------------
+
+Shuffling the array first:
+Yes. It improves the runtime speed in sorted arrays.
+If the array is already sorted, with quick sort the complexity is quadratic. But when we shuffle the array, the runtime
+of a sorted array decreases because of the change in complexity. So the sorting process gets faster. In random array, there is
+no change in runtime with shuffling unless the shuffling process accidentally sorts the array. In that case the runtime
+becomes quadratic. In random and 95% sorted arrays the complexity remains the same which is faster than quadratic.
+The runtime in each column is about identical when we shuffle the list. It is however slightly worse during smaller sizes.
+This differs between the different columns but for all of them, a sample size of up to 160 produces worse results.
+But:
+We added a constraint to shuffle method to only shuffle arrays with the size larger than 90,
+because the shuffling seems to work better in larger arrays.
+"&& a.length > 90"
+
+Shuffling On:
+Size |        Random |    95% sorted |        Sorted
+10000 |      0,902320 |      0,876160 |      0,880975
+100000 |     10,061100 |     10,133900 |     10,312099
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 10 / 0,9 = 10 < 100   ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 10 / 0,87 = 10 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 10,3 / 0,88 = 10 < 100  -> faster than quadratic. Close to linear.
+
+------------------------------------------------------------------------------------------------------
+
+Median-of-three pivot selection:
+Yes, It improves the complexity in all columns.
+
+* This method's complexity has about the same complexity for random arrays and 95% sorted arrays.
+* In sorted arrays the complexity is significantly lower than regular pivot selection, which is quadratic.
+  The reason is that, the pivot selected with "median of three" is more close to the actual median.
+* The more an array is sorted, the better results for runtime we get from this method of pivot selection, and
+  we get closer to linear time.
+
+Median-of-three:
+  10000 |      0,742615 |      0,623097 |      0,284246
+ 100000 |      9,057750 |      8,374950 |      3,539100
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 9 / 0,7 = 9 < 100   ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 8,3 / 0,62 = 8 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 3,5 / 0,3 = 12 < 100  -> faster than quadratic. Much closer to linear.
+
+------------------------------------------------------------------------------------------------------
+
+Insertion sort:
+No, Insertion sort made the runtime a bit faster but the complexity didnt change for none of the columns.
+This is illustrated below:
+
+Insertion:
+ size           random          95% sorted     sorted
+ 10000 |       0,557523 |      0,951695 |     38,109700
+100000 |       6,961101 |     13,918201 |   4030,485400
+
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 6,9 / 0,55 = 1,5 < 100   ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 13,9 / 0,95 = 14 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 4030 / 38 = 100   -> Still quadratic
+
+
+/******************************************************************************
+** 4. What is a good cutoff to use for insertion sort?
+**    Explain briefly how you came to this answer.
+**    Remember that you should try to find the answer in a systematic way.
+******************************************************************************/
+
+A value of around 55 for the InsertionCutoff worked well for us.
+
+We found this value by checking different cutoff values. We started by adding code that checked if the InsertionCutoff was above 0,
+which means that we want to use InsertionCutoff. Then we also check if the current array to be sorted is smaller than the
+value of InsertionCutoff, and then sort it with Insertion Sort. We then ran different executionTimeReport with different
+cutoff values. We started at cutoff value 10 and went to a cutoff value of 100. This led us to the conclusion that
+the time in ms got better as we got closer to around the values 40-55, but started to get worse as we neared 100.
+
+/******************************************************************************
+** 5. Which combination of improvements gives the best performance?
+******************************************************************************/
+
+FTT - useMedian + InsertionCutoff(Best performance):
+This is the best combination for quick sort. The more the array is sorted the
+better results we get from this combination. Also the overall runtime speed of FTT is significantly lower than other tested
+combinations mostly because of the pace of sorting sorted arrays. The runtime speed is almost the same as other
+combinations for random arrays.
+
+size           random          95% sorted     sorted
+10000 |      0,552727 |      0,438238 |      0,118929
+100000 |      6,865050 |      5,552500 |      1,516130
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 6,9 / 0,55 = 14 < 100   ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 5,5 / 0,43 = 14 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 1,5 / 0,1 = 15 < 100  -> faster than quadratic. Close to linear.
+
+------------------------------------------------------------------------------------------------------
+
+TFT - Modified Shuffling + InsertionCutoff:
+The combination of Shuffling and insertion sort makes sorting faster overall. This is made possible by the shuffling.
+It's entirely shuffling that is making it so that sorting sorted arrays become faster than quadratic
+
+size           random          95% sorted     sorted
+  10000 |      0,662495 |      0,674595 |      0,679740
+ 100000 |      8,345650 |      8,408350 |      8,400050
+
+A2 / A1 = 100000 /10000 = 10
+Random: runtime2 / runtime1 = 8,3 / 0,66 = 12,6 < 100   ->  faster than quadratic. Close to linear.
+95% Sorted: runtime2 / runtime1 = 8,4 / 0,67 = 12,5 < 100  -> faster than quadratic. Close to linear.
+Sorted : runtime2 / runtime1 = 8,4 / 0,68 = 12,4 < 100  -> faster than quadratic. Close to linear.
+
+------------------------------------------------------------------------------------------------------
+
+TTF - useMedian + Modified Shuffling:
+When combining median of three with shuffling, it didnt change the runtime for shuffling, but it made
+the runtime for median of three worse. The complexity didnt change its still faster than quadratic, which
+is illustrated below:
+
+useMedian + Modified Shuffling:
+size        random            95% sorted      sorted
+10000  |      0,953890 |      0,953490 |      0,955290
+100000 |     10,767699 |     10,986200 |     11,049201
+
+Random:
+Check for quadratic: 100 * 0,953890 = 95,3890 | Actual: 10.986200 | faster than quadratic
+95% sorted:
+Check for quadratic: 100 * 0,953490 = 95,3490 | Actual: 10,986200 | faster than quadratic
+sorted:
+Check for quadratic: 100 * 0,955290 = 95,5290 | Actual: 11,049201 | faster than quadratic
+
+------------------------------------------------------------------------------------------------------
+
+Other observations:
+Insertion cut off makes the smaller arrays sorting faster.
+Shuffle makes smaller size arrays worse.
+Shuffle also makes using the "useMedian" and "InsertionCutoff", not as powerful.
+
+/******************************************************************************
+** Appendix: General information
+**
+** A. Approximately how many hours did you spend on the assignment?
+******************************************************************************/
+
+[Lucas Nordgren]:  [3h + 3h(meeting) + 1h + 1h + 3h-30min(meeting) + 2h + 3h(meeting) | TOTAL: 16h 30min]
+[Maryam Esmaeili Darestani]:  [1h-30min + 3h(meeting) + 3h-30min(meeting) + 1h-30min + 1h-30min + 3h(meeting) | TOTAL: 14h]
+[Jina Dawood]:  [3h(meeting) + 3h-30 min(meeting) + 3h(meeting) | TOTAL: 9.5 hours]
+
+/******************************************************************************
+** B. Are there any known bugs / limitations?
+******************************************************************************/
+
+We could not find any major bugs or limitations. Maybe one:
+* Corona - Can't code together IRL.
+
+/******************************************************************************
+** C. Did you collaborate with any other students on this lab?
+**    If so, please write in what way you collaborated and with whom.
+**    Also include any resources (including the web) that you may
+**    may have used in creating your design.
+******************************************************************************/
+
+We googled how to do the swapping of medians correctly. We then mimicked some code on stackoverflow, to get it working.
+
+/******************************************************************************
+** D. Describe any serious problems you encountered.                    
+******************************************************************************/
+
+We got java.lang.AssertionError when using "Median-of-three". I tried solving it by creating another main in Quick.java,
+but this did not help. It worked well to sort the same array from here, which lead me to believe that
+the problem wasn't with the array itself but with something stemming from the recursive nature of the methods in Quick.java.
+Further debugging clarified that some methods were incorrect and this was solved. Mainly there was an issue with only
+replacing the element of one pointer, and not the other.
+
+Pushing in "code with me" did not work correctly and we lost some parts of data.
+
+/******************************************************************************
+** E. List any other comments here.
+**    Feel free to provide any feedback on how much you learned 
+**    from doing the assignment, and whether you enjoyed it.                                             
+******************************************************************************/
+
+* "Reeli fanny. Reeeeli good" - Quote by Jina
+* We enjoyed the lab, but found it frustrating at times, of course.
+* I think the assignment was helpful in understanding how combinations of different sort methods work together.
+* Since there was so much other code(code for testing etc), we had trouble following exactly what happened in the code,
+  which made it harder for us to understand the actual sorting methods.
+* The hints in the code were good, except for "median of three" method.
+* I think that the complexity of the code has also some benefits for us since it makes us prepared for the similar situation
+  happening in our jobs in the (hopefully near) future that we might not understand everything fully but we need to accomplish
+  our objectives.

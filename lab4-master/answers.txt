@@ -1,0 +1,256 @@
+/******************************************************************************
+** DIT181  Datastrukturer och algoritmer, LP3 2021
+** Lab 4: Path finder
+*******************************************************************************/
+
+Group members:
+- [Maryam Esmaeili Darestani]
+- [Jina Dawood]
+- [Lucas Nordgren]
+
+/******************************************************************************
+** 1. List the minimal cost, shortest path, and number of loop iterations
+**    for each of the following invocations.
+******************************************************************************/
+
+> java RunPathFinder ucs AdjacencyGraph graphs/AdjacencyGraph/citygraph-SE.txt Lund Kiruna
+
+loop iterations: [2719]
+minimal cost:    [1826.0]
+shortest path:   [31]
+
+> java RunPathFinder ucs NPuzzle 3 "/HFG/BED/C_A/" "/ABC/DEF/GH_/"
+
+loop iterations: [241919]
+minimal cost:    [31.0]
+shortest path:   [31]
+
+> java RunPathFinder astar NPuzzle 3 "/HFG/BED/C_A/" "/ABC/DEF/GH_/"
+
+loop iterations: [17689]
+minimal cost:    [31.0]
+
+> java RunPathFinder ucs NPuzzle 3 "/HGF/BED/C_A/" "/ABC/DEF/GH_/"
+
+loop iterations: [241921]
+minimal cost:    [null]
+shortest path:   [null]
+
+> java RunPathFinder ucs GridGraph graphs/GridGraph/AR0011SR.map "23:161" "130:211"
+
+loop iterations: [79736]
+minimal cost:    [366.4]
+shortest path:   [308]
+
+> java RunPathFinder astar GridGraph graphs/GridGraph/AR0011SR.map "23:161" "130:211"
+
+loop iterations: [47900]
+minimal cost:    [366.4]
+
+> java RunPathFinder ucs WordLadder graphs/WordLadder/words-saldo.txt syster broder
+
+loop iterations: [36865]
+minimal cost:    [11.0]
+shortest path:   [11]
+
+> java RunPathFinder astar WordLadder graphs/WordLadder/words-saldo.txt syster broder
+
+loop iterations: [2217]
+minimal cost:    [11.0]
+
+
+/******************************************************************************
+** 2. For each of the three classes GridGraph, WordLadder, and NPuzzle,
+**    what is the approximate improvement in the number of loop iterations
+**    by running A* instead of UCS?
+**    Try a number of different examples per class.
+******************************************************************************/
+
+GridGraph:
+GridGraph graphs/GridGraph/maze-20x10.txt "2:1" "78:19"
+- A*    :1552
+- UCS   :2213
+GridGraph graphs/GridGraph/AR0011SR.map "23:161" "130:211"
+- A*    :47900
+- UCS   :79736
+GridGraph graphs/GridGraph/maze-100x50.txt "1:1" "199:99"
+- A*    :12733
+- UCS   :13248
+  - The improvements vary from problem to problem. A* generally has around 1 to 1.7 times less itterations over USC.
+
+WordLadder:
+WordLadder graphs/WordLadder/words-saldo.txt syster broder
+- A*    :2217
+- UCS   :13626
+WordLadder graphs/WordLadder/words-saldo.txt syster klurar // and this one
+- A*    :1298
+- UCS   :12870
+  - A* has generally much less iterations than USC on wordladders.
+
+NPuzzle:
+NPuzzle 3 "/HFG/BED/C_A/" "/ABC/DEF/GH_/"
+- A*    :17689
+- UCS   :241919
+  - A* has a lot less iterations on NPuzzle as well.
+
+
+/******************************************************************************
+** 3. For which of the three classes GridGraph, WordLadder, and NPuzzle,
+**    did the heuristics .guessCost() have the most impact?
+**    Why do you think this is the case?
+******************************************************************************/
+
+It had the most impact on Wordladder and NPuzzle
+
+In GridGraph there are only a few nodes among all that can connect the origin node and to the destination node and we have
+to find the best path through those limited amount of nodes which most of them cannot have a direct way to the goal node
+because of the obstacle coordinations in the graph. Therefore the A* heuristic method returns a more similar priority
+result for most of the nodes compared to UCS.
+
+On the other hand, in NPuzzle and WordLadder the nodes have a more widespread connection since there is not much obstacle
+between different words and the heuristic method in A* actually can make a notable difference between the priority result
+of UCS and A*.
+
+
+/******************************************************************************
+** 4. Give pseudo-code of the following methods that you implemented.
+**    Try to abstract over details which are relevant only for Java.
+**    Make it easy to follow for a human.
+******************************************************************************/
+
+WordLadder.outgoingEdges(String w):
+    List of closeWords;
+
+    char[] wChars from w;
+    for(length of wChars) {
+        charToReplace = wChars[i]
+
+        for (every character in "charset") {
+            replace wChars[i] with first character in "charset";
+
+            newWord = wChars;
+            if(the dictionary does not contain newWord or newWord equals(w))
+                continue;
+
+            else {
+                add the newWord to closeWords;
+                Maybe: also remove newWord from the dictionary;
+            }
+            wChars[i] = charToReplace; // We revert the character change of wChars in order to keep finding differences
+                                          with only one character change.
+        }
+
+        return closeWords;
+    }
+
+
+WordLadder.guessCost(String w, String u):
+    char[] wChars from w;
+    Char[] uChars from u;
+
+    int counter;
+    for (iteration i < (the minimum length of w or u)) {
+        if (we do not find a similarity between wChars[i] and uChars[i])
+            counter++;
+    }
+    return the non-similarities;
+
+
+GridGraph.guessCost(Coord p, Coord q):
+    coordination of p;
+    coordination of q;
+    deltaX = |X coordination of q - X coordination of p|;
+    deltaY = |Y coordination of q - Y coordination of p|;
+    result = deltaX + deltaY;
+
+
+/******************************************************************************
+** 5. Give pseudo-code of the method .searchAstar() in PathFinder.
+******************************************************************************/
+
+PathFinder.searchAstar(Node start, Node goal):
+
+let V be a set of visited nodes;
+let Q be a priory queue be ordered by the: cost to a node + the guessed cost from that node to the goal node.
+add the node start to the Q;
+
+while (Q is not empty) {
+    let N1 be the node with the least cost from Q and store it in a variable called N1;
+    remove N1 from Q;
+
+    if(N1 == goal)
+        return Result with SUCCESS, cost of path and the "walked" nodes;
+
+    if (V does not contain N1) {
+        for ( every edge that goes out of N1) {
+            N2 = the node that the edge goes into
+            if (V does not contain N2) {
+                a = calculate the cost to N2;
+                b = calculate the guess cost from N2 to the goal;
+                put a + b into N2;
+                save N2 into Q;
+            }
+            Add N1 to V;
+        }
+    }
+   return Result with FAIL;
+}
+
+
+/******************************************************************************
+** 6. What are the main differences between your implementations 
+**    of .searchAstar() and .searchUCS()?
+******************************************************************************/
+
+The priority queue in USC prioritize the entries according to the cost to their node. But Astar prioritize entries according
+to summation of the cost to their node and the guessed cost from the node to the goal node.
+
+
+/******************************************************************************
+** Appendix: General information
+**
+** A. Approximately how many hours did you spend on the assignment?
+******************************************************************************/
+
+[Maryam Esmaeili Darestani]:  [3 days - (fika time + nights)]
+[Jina Dawood]:  [3+3+3+4+2+3]
+[Lucas Nordgren]:  [16+(3)+(3)+(currentmeeting)]
+
+
+/******************************************************************************
+** B. Are there any known bugs / limitations?
+******************************************************************************/
+
+A fly entered my room.
+
+
+/******************************************************************************
+** C. Did you collaborate with any other students on this lab?
+**    If so, please write in what way you collaborated and with whom.
+**    Also include any resources (including the web) that you may
+**    may have used in creating your design.
+******************************************************************************/
+
+No.
+
+
+/******************************************************************************
+** D. Describe any serious problems you encountered.                    
+******************************************************************************/
+
+- It was a bit tricky to understand how to work with the lambda in searchUCS
+- We got a bit fatigued while coding so we took a lot of fika breaks.
+- Understanding how to work with entry and graph was a bit confusing in the begining, but after some time of struggling
+ it got easier and more familiar. Maybe in the future some comments can be helpful.
+ - We didnt excect to finish more than half before the first deadline, so we missed the checkpoint.
+
+
+/******************************************************************************
+** E. List any other comments here.
+**    Feel free to provide any feedback on how much you learned 
+**    from doing the assignment, and whether you enjoyed it.                                             
+******************************************************************************/
+
+- Our understanding from graphs and how each node in connected to otters has increased after doing this lab.
+- The implementation of UCS and A* search methods helped us get a deeper insight about the ways of implementing them in
+  different situations.

@@ -1,0 +1,129 @@
+
+/******************************************************************************
+** DIT181  Datastrukturer och algoritmer, LP3 2021
+** Lab 2: Autocomplete
+*******************************************************************************/
+
+Group members:
+- [Maryam Esmaeili Darestani]
+- [Jina Dawood]
+- [Lucas Nordgren]
+
+/******************************************************************************
+** 1. Describe how your firstIndexOf() method in RangeBinarySearch.java
+**    finds the first index of a key that equals the search key.
+******************************************************************************/
+
+- The method receives a sorted array,and a key which we are supposed to look for inside of the array and a comparator to
+compare elements in the sorted array. We calculate the middle index of the array using the first and last index. Then we
+compare the element in the middle index with the key by the comparator. The value that the comparator returns is negative
+if the value of the key is lower than the middle element, 0 if the value is equal to the key and positive if the value
+of the key is higher than the middle element.
+
+- If the middle index value is higher than the key, we use the index of the element before the middle element as the new
+last index. Then we continue the loop by calculating the new middle index and doing the whole process mentioned above again.
+If the middle index value is equal to the key value, first we check whether the index of middle value is 0. If it is,
+then the search is done and we have found our first index of the key. But if not, we check the value for the index before
+the middle index. If the value of that element is different from the key, then again we have found the first index of the
+key and the loop ends here. But if it is equal to the key value, then we change the last index into this element's index
+and the loop continues all over again until it finds the middle element which is equal to the key and its former element
+differs from the key.
+
+- if the middle index value is lower than the key, we treat it exactly like the previous case. We change the last index
+into the index before the middle index. Then we calculate the new middle index using new last index and first index and
+the loop continues.
+
+- Since both methods for finding indexes do not work properly for the cases that the key equals to index 0 or "array.length - 1",
+we get an index out of bound error, since there is no element before the first one. We solved this issue by having an
+if inside the loop to find out whether the key is equal to the 0 or "array.length - 1" index. If it is,
+we return 0 or "array.length - 1", as the "found index" without entering the loop itself.
+
+/******************************************************************************
+** 2. State and justify the asymptotic complexity of the operations
+**    in the Autocomplete class in the dictionary size n.
+**    For all Matches and numberOfMatches, the asymptotic complexity
+**    should also depend on the matching terms m.
+**
+**    You may take the number of comparisons as a proxy for the runtime.
+******************************************************************************/
+
+sortDictionary: O(n log n)
+- According to docs.oracle.com, Arrays.sort is using a version of Timsort,
+which has a Worst-case complexity of O(n log n). Using a comparator only
+means that we use the chosen comparator to help sort the array and this
+does not add any complexity. Since we aren't doing anything else fancy,
+O(n log n) is the complexity of our method.
+
+
+allMatches: O(log N + M log M)
+- This method works by first creating a new array and a new Term object(used for comparisons).
+Here we go into two different methods to find the first and last index. Doing either of these take O(log n) time, since
+we are .
+Doing both of them therefore takes O(log n) + O(log n) = O(log n + log n) = O(log n) time.
+- After we have found the indexes we sort the array by which weight they have. This takes O(m log m) times,
+where m is the total amount of matching elements. m = lastIndexOf - firstIndexOf + 1.
+- In total, the method allMatches take (O(log n) + O(log n)) + O(m) + O(m log m) = O(log N + m log m) time.
+
+
+numberOfMatches: O(log n)
+- This works in the same way as before only that here we don't do any sorting. We only do the binary search in order to
+find the first and last index. This takes O(log n) + O(log n) = O(log n + log n) = O(log n) time.
+
+/******************************************************************************
+** Appendix: General information
+**
+** A. Approximately how many hours did you spend on the assignment?
+******************************************************************************/
+
+[Maryam Esmaeili Darestani]: [25]
+[Jina Dawood]: [8]
+[Lucas Nordgren]: [25]
+
+/******************************************************************************
+** B. Are there any known bugs / limitations?
+******************************************************************************/
+
+- No. Our methods are awesome and work in every condition B)
+
+/******************************************************************************
+** C. Did you collaborate with any other students on this lab?
+**    If so, please write in what way you collaborated and with whom.
+**    Also include any resources (including the web) that you may
+**    may have used in creating your design.
+******************************************************************************/
+
+- We did not collaborate with any other students.
+- We used stackoverflow and docs.oracle.com when we got stuck. And Canvas of course, for those sweet additional pages. And
+TAs
+
+/******************************************************************************
+** D. Describe any serious problems you encountered.                    
+******************************************************************************/
+
+- It was hard to understand what was explained in the comments. They caused more confusion than
+it helped. For example "Precondition" made us think that we had to sort it inside the methods
+all the time. Going through the AutocompleteCLI helped though :'D.
+
+- It took some time to figure out how Generics work, and that we have to send in a Term,
+and not a String into the RangeBinarySearch
+
+- It was a challange to work with comparators and using them in a Binary search.
+
+- We struggled so much with the methods in RangeBinarySearch and made many changes to these methods to get them to work
+correctly. There was one interesting issue during this process that I am not sure whether it is some sort of limitation.
+We made the number of time that the while loop can go on, as a condition and we made it proportional to the log of the
+array size. For example if the array size is 8, then the loop cannot continue for more than 3 time and it should be enough
+for it to explore elements in a sorted array. Although this is theoretically correct, in large size arrays this does not
+always work and the loop might need to continue for several more times to find the desirable element (I could not figure
+out the reason for this). But the number is not very different from the log of array size. So generally the complexity is
+the same. This issue made us confused for some times.
+
+/******************************************************************************
+** E. List any other comments here.
+**    Feel free to provide any feedback on how much you learned 
+**    from doing the assignment, and whether you enjoyed it.                                             
+******************************************************************************/
+
+- The assignment was good but, quite hard as well. It wasn't always clear what we were doing.
+- This lab helped us to understand the binary search so thoroughly that I personally don't think I will ever forget how
+this method works!
